@@ -3,8 +3,8 @@ CFLAGS = -std=c11 -Wall -g -O -Ilib -pthread
 LIBS = -lm -lrt -pthread
 
 # Sorgenti e oggetti
-SRCS = src/algorithmC.c
-OBJS = src/algorithmC.o
+SRCS = src/algorithmC.c src/algorithmD.c
+OBJS = src/algorithmC.o src/algorithmD.o
 
 # Target principale
 all: burrow-wheeler

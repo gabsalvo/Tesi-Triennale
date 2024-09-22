@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "algorithmC.h"
+#include "algorithmD.h"
 
 int main() {
     char stringa[100];
@@ -31,10 +32,11 @@ int main() {
     find_last_column(matrice, L, lunghezza);  // Trova l'ultima colonna
 
     // Stampa la tupla (L, I)
-    printf("(%s, %d)\n", L, original_index);
+    printf("Stringa compressa: (%s, %d)\n", L, original_index);
 
-    // Scrivi la matrice in un file esterno nella cartella "matrices"
-    write_to_file(stringa, matrice, lunghezza);
+    // Decompressione con Algorithm D
+    printf("Decompressione in corso...\n");
+    decompression(L, original_index, lunghezza);
 
     // Libera la memoria
     for (int i = 0; i < lunghezza; i++) {
