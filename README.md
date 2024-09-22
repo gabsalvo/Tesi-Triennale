@@ -17,4 +17,4 @@
 4. ./burrows-wheeler
 ~~~
 
-**La compressione funziona, non è ottimizzata ma funziona; la decompressione ha ancora qualche problema.**
+**La compressione funziona, non è ottimizzata ma funziona; La decompressione ora funziona**
