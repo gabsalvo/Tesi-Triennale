@@ -1,95 +1,94 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "algorithmD.h"
 
-// Funzione di confronto per ordinare i caratteri in ordine lessicografico
+// Function to compare characters for qsort
 int compare_char(const void *a, const void *b) {
     return (*(char *)a - *(char *)b);
 }
 
-// Funzione per creare la colonna F ordinata da L
-void create_F(char *L, char *F, int lunghezza) {
-    strcpy(F, L);  // Copia L in F
-    qsort(F, lunghezza, sizeof(char), compare_char);  // Ordina F
+// Function to create the first column F by sorting L
+void create_F(char *L, char *F, int length) {
+    strcpy(F, L);  // Copy L into F
+    qsort(F, length, sizeof(char), compare_char);  // Sort F
 }
 
-// Funzione per creare il vettore di corrispondenza T
-void create_T(char *L, char *F, int *T, int lunghezza) {
-    int countL[256] = {0};  // Frequenza dei caratteri in L
-    int countF[256] = {0};  // Frequenza dei caratteri in F
-    int positionL[256] = {0}; // Posizioni di inizio per i caratteri in L
-    int positionF[256] = {0}; // Posizioni di inizio per i caratteri in F
+// Function to create the mapping vector T
+void create_T(char *L, char *F, int *T, int length) {
+    int countF[256] = {0};          // Counts of characters in F
+    int firstOccurrence[256];       // First occurrence of characters in F
 
-    // Conta le occorrenze dei caratteri in L e F
-    for (int i = 0; i < lunghezza; i++) {
-        countL[(unsigned char)L[i]]++;
+    // Count the occurrences of characters in F
+    for (int i = 0; i < length; i++) {
         countF[(unsigned char)F[i]]++;
     }
 
-    // Calcola le posizioni iniziali per i caratteri in L e F
-    for (int i = 1; i < 256; i++) {
-        positionL[i] = positionL[i - 1] + countL[i - 1];
-        positionF[i] = positionF[i - 1] + countF[i - 1];
+    // Compute the first occurrence of each character in F
+    int sum = 0;
+    for (int c = 0; c < 256; c++) {
+        if (countF[c] > 0) {
+            firstOccurrence[c] = sum;
+            sum += countF[c];
+        } else {
+            firstOccurrence[c] = -1;  // Character not present
+        }
     }
 
-    // Crea il vettore T
-    for (int i = 0; i < lunghezza; i++) {
-        // Trova l'indice della prossima occorrenza di L[i] in F
+    // Initialize count of occurrences in L
+    int countL[256] = {0};
+
+    // Create the T vector
+    for (int i = 0; i < length; i++) {
         int ch = (unsigned char)L[i];
-        T[positionF[ch]] = i;
-        positionF[ch]++;
+        int k = countL[ch];  // Number of times ch has occurred in L so far
+        T[i] = firstOccurrence[ch] + k;
+        countL[ch]++;
     }
 
-    // Debug: stampa il vettore T
+    // Debug: print the T vector
     printf("Vettore T: ");
-    for (int i = 0; i < lunghezza; i++) {
+    for (int i = 0; i < length; i++) {
         printf("%d ", T[i]);
     }
     printf("\n");
 }
 
 // Funzione per ricostruire la stringa originale
-void reconstruct_original(char *L, int *T, int original_index, int lunghezza) {
-    char *originale = (char *)malloc((lunghezza + 1) * sizeof(char));
+void reconstruct_original(char *L, int *T, int original_index, int length) {
+    char *original = (char *)malloc((length + 1) * sizeof(char));
     int current_pos = original_index;
 
-    // Debug: iniziamo la decompressione
-    printf("Inizio ricostruzione dalla posizione %d\n", original_index);
-
-    // Ricostruisce la stringa partendo da T
-    for (int i = 0; i < lunghezza; i++) {  // Correzione: da 0 a lunghezza
-        originale[i] = L[current_pos];  // Aggiungiamo il carattere corrente
-        current_pos = T[current_pos];  // Vai alla prossima posizione con T
-
-        // Debug: stampa il carattere e la nuova posizione
-        printf("Posizione attuale: %d, Carattere: %c\n", current_pos, originale[i]);
+    // Ricostruisce la stringa partendo da T in ordine inverso
+    for (int i = length - 1; i >= 0; i--) {
+        original[i] = L[current_pos];
+        current_pos = T[current_pos];
     }
-    originale[lunghezza] = '\0';  // Terminatore di stringa
+    original[length] = '\0';  // Terminatore di stringa
 
     // Stampa la stringa originale ricostruita
-    printf("Stringa originale ricostruita: %s\n", originale);
+    printf("Stringa originale ricostruita: %s\n", original);
 
-    free(originale);
+    free(original);
 }
 
-// Funzione principale che esegue Algorithm D
-void decompression(char *L, int original_index, int lunghezza) {
-    // Step 1: Crea la colonna F ordinando L
-    char *F = (char *)malloc((lunghezza + 1) * sizeof(char));
-    create_F(L, F, lunghezza);
 
-    // Debug: stampa F
+// Main function that executes Algorithm D
+void decompression(char *L, int original_index, int length) {
+    // Step 1: Create the first column F by sorting L
+    char *F = (char *)malloc((length + 1) * sizeof(char));
+    create_F(L, F, length);
+
+    // Debug: print F
     printf("Colonna F (ordinata): %s\n", F);
 
-    // Step 2: Crea il vettore T
-    int *T = (int *)malloc(lunghezza * sizeof(int));
-    create_T(L, F, T, lunghezza);
+    // Step 2: Create the T vector
+    int *T = (int *)malloc(length * sizeof(int));
+    create_T(L, F, T, length);
 
-    // Step 3: Ricostruisci la stringa originale usando T
-    reconstruct_original(L, T, original_index, lunghezza);
+    // Step 3: Reconstruct the original string using T
+    reconstruct_original(L, T, original_index, length);
 
-    // Libera la memoria
+    // Free allocated memory
     free(F);
     free(T);
 }
