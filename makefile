@@ -7,10 +7,10 @@ SRCS = src/algorithmC.c src/algorithmD.c
 OBJS = src/algorithmC.o src/algorithmD.o
 
 # Target principale
-all: burrow-wheeler
+all: burrows-wheeler
 
 # Regola per creare l'eseguibile
-burrow-wheeler: $(OBJS)
+burrows-wheeler: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) main.c $(LIBS)
 
 # Regola per compilare il file .o specifico nella directory src
